@@ -1,138 +1,93 @@
+//Author: Nicole Narr
+//Owner: Nicole Narr
+
 #include <iostream>
-
-using namespace std;
-
-// PRE:  a year greater or equal than 1900
-// POST: returns whether that year was a leap year
-bool is_leap_year(unsigned int year);
-
-// PRE:  a year greater or equal than 1900
-// POST: returns the number of days in that year
-unsigned int count_days_in_year(unsigned int year);
-
-// PRE:  a month between 1 and 12 and a year greater or equal than 1900
-// POST: returns the number of days in the month of that year
-unsigned int count_days_in_month(unsigned int month, unsigned int year);
-
-// PRE:  n/a
-// POST: returns whether the given values represent a valid date
-bool is_valid_date(unsigned int day, unsigned int month, unsigned int year);
-
-// PRE:  the given values represent a valid date
-// POST: returns the number of days between January 1, 1900 and this date
-unsigned int count_days(unsigned int day, unsigned int month, unsigned int year);
-
-int main(void){
-  unsigned int year, month, day;
-  cin >> day >> month >> year;
-  if(is_valid_date(day, month, year)){
-
-    switch(count_days(day, month, year) % 7){
-      case 0: cout << "Monday" << endl; break;
-
-      case 1: cout << "Tuesday" << endl; break;
-
-      case 2: cout << "Wednesday" << endl; break;
-
-      case 3: cout << "Thursday" << endl; break;
-
-      case 4: cout << "Friday" << endl; break;
-
-      case 5: cout << "Saturday" << endl; break;
-
-      case 6: cout << "Sunday" << endl; break;
-    }
-  } else {
-    cout << "invalid date\n";
-  }
-  return 0;
-}
 
 // PRE:  a year greater or equal than 1900
 // POST: returns whether that year was a leap year
 bool is_leap_year(unsigned int year){
-    if(year % 4 != 0){
-      return false;
-    } else if(year % 100 != 0){
-      return true;
-    } else if(year % 400 != 0){
-      return false;
-    } else {
-      return true;
+    if ((year-1900)%4==0){
+        if (year%100==0 && year%400!=0){return false;}
+        else{return true;}
     }
+    else{return false;}
 }
 
 // PRE:  a year greater or equal than 1900
 // POST: returns the number of days in that year
 unsigned int count_days_in_year(unsigned int year){
-    if(is_leap_year(year)){
-      return 366;
-    } else {
-      return 365;
-    }
+    if(is_leap_year(year)==true){return 366;}
+    else{return 365;}
 }
 
 // PRE:  a month between 1 and 12 and a year greater or equal than 1900
 // POST: returns the number of days in the month of that year
 unsigned int count_days_in_month(unsigned int month, unsigned int year){
-    if(month == 2){
-      if(is_leap_year(year)){
-        return 29;
-      } else {
-        return 28;
-      }
-    } else if((month < 8 && month % 2 != 0) || (month >= 8 && month % 2 == 0)){
-      return 31;
-    } else {
-      return 30;
+    switch(month){
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12: return 31; break;
+        case 2: if(count_days_in_year(year)==366){return 29; break;}
+                else{return 28;}
+                break;
+        case 4:
+        case 6:
+        case 9:
+        case 11: return 30; break;
+
     }
 }
 
 // PRE:  n/a
 // POST: returns whether the given values represent a valid date
 bool is_valid_date(unsigned int day, unsigned int month, unsigned int year){
-    if(year < 1900){
-      return false;
+    if(year>=1900){
+        if(month>=1 && month<=12){
+            if(day>=1 && day<=count_days_in_month(month,year)){
+                return true;
+            }
+            else return false;
+        }
+        else return false;
     }
-    if(month > 12 || month < 1){
-      return false;
-    }
-    if(day > 31 || day < 1){
-      return false;
-    }
-    if(is_leap_year(year) == true && month == 2 && day > 29){
-      return false;
-    }
-    if(is_leap_year(year) == false && month == 2 && day > 28){
-      return false;
-    }
-    if(month != 2 && ((month < 8 && month % 2 == 0 && day > 30) || (month >= 8 && month % 2 != 0 && day > 30))){
-      return false;
-    }
-    if(month != 2 && ((month < 8 && month % 2 != 0 && day > 31) || (month >= 8 && month % 2 == 0 && day > 31))){
-      return false;
-    }
-    return true;
+    else return false;
 }
 
 // PRE:  the given values represent a valid date
 // POST: returns the number of days between January 1, 1900 and this date
 unsigned int count_days(unsigned int day, unsigned int month, unsigned int year){
-    unsigned int y = 1900, m = 1, days = 0;
+    unsigned int daycount=0;
 
-    while(y < year){
-      days += count_days_in_year(y);
-      y++;
+    for(unsigned int i=1900; i<year;i++){
+        daycount=daycount+count_days_in_year(i);
+    }
+    for(unsigned int i=1;i<month;i++){
+        daycount=daycount+count_days_in_month(i,year);
+    }
+    for(unsigned int i=1;i<day;i++){
+        daycount++;
     }
 
-    while(m < month){
-      days += count_days_in_month(m, year);
-      m++;
-    }
+    return daycount;
+}
 
-    if(1 < day){
-        days += day-1;
+int main(){
+    unsigned int day,month,year;
+    std::cin >> day >> month >> year;
+    if(is_valid_date(day,month,year)){
+        switch(count_days(day,month,year)%7){
+            case 0: std::cout << "Monday"; break;
+            case 1: std::cout << "Tuesday"; break;
+            case 2: std::cout << "Wednesday"; break;
+            case 3: std::cout << "Thursday"; break;
+            case 4: std::cout << "Friday"; break;
+            case 5: std::cout << "Saturday"; break;
+            case 6: std::cout << "Sunday"; break;
+        }
     }
-
-    return days;
+    else{std::cout << "Invalid date";}
 }
